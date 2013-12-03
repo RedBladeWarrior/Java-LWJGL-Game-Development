@@ -1,0 +1,133 @@
+package com.vbo.tutorial;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL15.*;
+
+import java.io.IOException;
+import java.nio.FloatBuffer;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
+import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.opengl.TextureLoader;
+import org.newdawn.slick.util.ResourceLoader;
+
+public class Core
+{
+	private static final int VERTICES = 6;
+	private static final int DIMENSIONS = 3;
+	private static final int UV = 2;
+	
+	private static int vboVertexHandle;
+	private static int vboTexCoordHandle;
+	
+	private static Texture texture;
+	
+	private static final String PATH = "res/Test.png";
+	
+	public static void main(String[] args)
+	{
+		initDisplay();
+		initGL();
+		initVBO();
+		initTexture();
+		run();
+	}
+	
+	private static void initDisplay()
+	{
+		try
+		{
+			Display.setDisplayMode(new DisplayMode(512, 512));
+			Display.setTitle("VBO Tutorial");
+			Display.create();
+		}
+		catch(LWJGLException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	private static void initGL()
+	{
+		glClearColor(1, 1, 1, 1);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho(0, 1, 0, 1, -1, 1);
+		glMatrixMode(GL_MODELVIEW);
+		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glLoadIdentity();
+	}
+	
+	private static void initVBO()
+	{
+		FloatBuffer vertexData = BufferUtils.createFloatBuffer(VERTICES * DIMENSIONS);
+		vertexData.put(new float[] {0, 0, 0});
+		vertexData.put(new float[] {1, 0, 0});
+		vertexData.put(new float[] {0, 1, 0});
+		vertexData.put(new float[] {1, 1, 0});
+		vertexData.put(new float[] {0, 1, 0});
+		vertexData.put(new float[] {1, 0, 0});
+		vertexData.flip();
+		
+		FloatBuffer textureCoordData = BufferUtils.createFloatBuffer(VERTICES * UV);
+		textureCoordData.put(new float[] {0, 1});
+		textureCoordData.put(new float[] {1, 1});
+		textureCoordData.put(new float[] {0, 0});
+		textureCoordData.put(new float[] {1, 0});
+		textureCoordData.put(new float[] {0, 0});
+		textureCoordData.put(new float[] {1, 1});
+		textureCoordData.flip();
+		
+		vboVertexHandle = glGenBuffers();
+		glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
+		glBufferData(GL_ARRAY_BUFFER, vertexData, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		
+		vboTexCoordHandle = glGenBuffers();
+		glBindBuffer(GL_ARRAY_BUFFER, vboTexCoordHandle);
+		glBufferData(GL_ARRAY_BUFFER, textureCoordData, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+	
+	private static void initTexture()
+	{
+		try
+		{
+			texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream(PATH), GL_NEAREST);
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	private static void run()
+	{
+		while(!Display.isCloseRequested())
+		{
+			glClear(GL_COLOR_BUFFER_BIT);
+			
+			glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
+			
+			glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
+			glVertexPointer(DIMENSIONS, GL_FLOAT, 0, 0L);
+			
+			glBindBuffer(GL_ARRAY_BUFFER, vboTexCoordHandle);
+			glTexCoordPointer(UV, GL_FLOAT, 0, 0L);
+			
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			glDrawArrays(GL_TRIANGLES, 0, VERTICES);
+			glDisableClientState(GL_VERTEX_ARRAY);
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+			
+			Display.update();
+			Display.sync(60);
+		}
+	}
+}
