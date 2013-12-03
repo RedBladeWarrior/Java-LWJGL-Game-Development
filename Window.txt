@@ -1,0 +1,60 @@
+package com.youtube.game;
+
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
+
+import static org.lwjgl.opengl.GL11.*;
+
+public class Window
+{
+	public static void create(int width, int height)
+	{
+		try
+		{
+			Display.setDisplayMode(new DisplayMode(width, height));
+			Display.setTitle("Youtube Tutorial");
+			Display.create();
+			initGL();
+		}
+		catch(LWJGLException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	private static void initGL()
+	{
+		glClearColor(0.5f, 0.5f, 1, 1);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho(0, Display.getWidth(), 0, Display.getHeight(), -1, 1);
+		glMatrixMode(GL_MODELVIEW);
+		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glLoadIdentity();
+	}
+	
+	public static void clear()
+	{
+		glClear(GL_COLOR_BUFFER_BIT);
+	}
+	
+	public static void update()
+	{
+		Display.update();
+		Display.sync(60);
+	}
+	
+	public static void destroy()
+	{
+		Display.destroy();
+		System.exit(0);
+	}
+	
+	public static boolean isCloseRequested()
+	{
+		return Display.isCloseRequested();
+	}
+}

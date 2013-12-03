@@ -1,0 +1,43 @@
+package com.youtube.game;
+
+public class Engine
+{
+	private static CoreGame coreGame;
+	
+	public static void main(String[] args)
+	{
+		createWindow();
+		createGame();
+		gameLoop();
+		cleanUp();
+	}
+	
+	private static void createWindow()
+	{
+		Window.create(800, 600);
+	}
+	
+	private static void createGame()
+	{
+		coreGame = new CoreGame();
+	}
+	
+	private static void gameLoop()
+	{
+		while(!Window.isCloseRequested())
+		{
+			Window.clear();
+			
+			//coreGame.input();
+			//coreGame.logic();
+			coreGame.render();
+			
+			Window.update();
+		}
+	}
+	
+	private static void cleanUp()
+	{
+		Window.destroy();
+	}
+}

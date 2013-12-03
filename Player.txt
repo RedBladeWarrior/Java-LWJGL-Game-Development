@@ -1,0 +1,74 @@
+package com.youtube.game;
+
+import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL11.*;
+
+import java.io.IOException;
+import java.nio.FloatBuffer;
+
+import org.lwjgl.BufferUtils;
+import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.opengl.TextureLoader;
+import org.newdawn.slick.util.ResourceLoader;
+
+public class Player
+{
+	private final int NUM_VERTICES = 6;
+	private final int DIMENSIONS = 3;
+	private final int TEX_COORDS = 2;
+	
+	private int vboVertexHandle;
+	private int vboTexCoordHandle;
+	
+	private Texture texture;
+	
+	private int x = 0;
+	private int y = 0;
+	
+	public Player()
+	{
+		try
+		{
+			texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/Player_Texture.png"), GL_NEAREST);
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+		
+		FloatBuffer vertexData = BufferUtils.createFloatBuffer(NUM_VERTICES * DIMENSIONS);
+		vertexData.put(new float[] {x, y, 0, x + CoreGame.TILE_SIZE, y, 0, x, y + CoreGame.TILE_SIZE, 0, x + CoreGame.TILE_SIZE, y + CoreGame.TILE_SIZE, 0, x, y + CoreGame.TILE_SIZE, 0, x + CoreGame.TILE_SIZE, y, 0});
+		vertexData.flip();
+		
+		FloatBuffer textureCoordData = BufferUtils.createFloatBuffer(NUM_VERTICES * TEX_COORDS);
+		textureCoordData.put(new float[] {0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1} );
+		textureCoordData.flip();
+		
+		vboVertexHandle = glGenBuffers();
+		glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
+		glBufferData(GL_ARRAY_BUFFER, vertexData, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		
+		vboTexCoordHandle = glGenBuffers();
+		glBindBuffer(GL_ARRAY_BUFFER, vboTexCoordHandle);
+		glBufferData(GL_ARRAY_BUFFER, textureCoordData, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+	
+	public void render()
+	{
+		glBindTexture(GL_TEXTURE_2D, texture.getTextureID());
+		
+		glBindBuffer(GL_ARRAY_BUFFER, vboVertexHandle);
+		glVertexPointer(DIMENSIONS, GL_FLOAT, 0, 0L);
+		
+		glBindBuffer(GL_ARRAY_BUFFER, vboTexCoordHandle);
+		glTexCoordPointer(TEX_COORDS, GL_FLOAT, 0, 0L);
+		
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glDrawArrays(GL_TRIANGLES, 0, NUM_VERTICES);
+		glDisableClientState(GL_VERTEX_ARRAY);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	}
+}

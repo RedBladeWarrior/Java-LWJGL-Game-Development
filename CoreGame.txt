@@ -1,0 +1,28 @@
+package com.youtube.game;
+
+public class CoreGame
+{
+	public final static int TILE_SIZE = 64;
+	
+	private static Player player;
+	
+	public CoreGame()
+	{
+		player = new Player();
+	}
+	
+	public void input()
+	{
+		
+	}
+	
+	public void logic()
+	{
+		
+	}
+	
+	public void render()
+	{
+		player.render();
+	}
+}
