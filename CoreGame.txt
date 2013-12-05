@@ -8,21 +8,28 @@ public class CoreGame
 	
 	public CoreGame()
 	{
+		new Image();
 		player = new Player();
 	}
 	
 	public void input()
 	{
-		
+		player.input();
 	}
 	
 	public void logic()
 	{
-		
+		player.logic();
 	}
 	
 	public void render()
 	{
 		player.render();
+	}
+	
+	public void dispose()
+	{
+		player.dispose();
+		Image.dispose();
 	}
 }

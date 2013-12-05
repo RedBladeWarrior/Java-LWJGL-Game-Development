@@ -28,8 +28,8 @@ public class Engine
 		{
 			Window.clear();
 			
-			//coreGame.input();
-			//coreGame.logic();
+			coreGame.input();
+			coreGame.logic();
 			coreGame.render();
 			
 			Window.update();
@@ -38,6 +38,7 @@ public class Engine
 	
 	private static void cleanUp()
 	{
+		coreGame.dispose();
 		Window.destroy();
 	}
 }
